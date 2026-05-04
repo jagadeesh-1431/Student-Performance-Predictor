@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - EduPredict{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <!-- Profile Information -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0"><i class="fas fa-user me-2"></i>Profile Information</h5>
+            </div>
+            <div class="card-body">
+                <form id="profileForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="firstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="firstName" value="Admin" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="lastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" value="User" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" value="admin@edupredict.com" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="organization" class="form-label">Organization</label>
+                            <input type="text" class="form-control" id="organization" value="EduPredict Inc." required>
+                        </div>
+                        <div class="col-12">
+                            <label for="bio" class="form-label">Bio</label>
+                            <textarea class="form-control" id="bio" rows="3" placeholder="Tell us about yourself...">Data analyst specializing in educational metrics and machine learning applications.</textarea>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Changes
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary ms-2" onclick="resetForm()">
+                            <i class="fas fa-undo me-2"></i>Reset
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Account Settings -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0"><i class="fas fa-cog me-2"></i>Account Settings</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                            <label class="form-check-label" for="emailNotifications">
+                                <strong>Email Notifications</strong>
+                                <br><small class="text-muted">Receive email updates about your predictions and system announcements</small>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="darkMode" onchange="toggleDarkMode()">
+                            <label class="form-check-label" for="darkMode">
+                                <strong>Dark Mode</strong>
+                                <br><small class="text-muted">Enable dark theme for better visibility in low light</small>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="autoSave" checked>
+                            <label class="form-check-label" for="autoSave">
+                                <strong>Auto-save Forms</strong>
+                                <br><small class="text-muted">Automatically save form data as you type</small>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="language" class="form-label">Language</label>
+                        <select class="form-select" id="language">
+                            <option value="en" selected>English</option>
+                            <option value="es">Spanish</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="timezone" class="form-label">Timezone</label>
+                        <select class="form-select" id="timezone">
+                            <option value="UTC" selected>UTC</option>
+                            <option value="EST">Eastern Time</option>
+                            <option value="PST">Pacific Time</option>
+                            <option value="GMT">GMT</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Management -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0"><i class="fas fa-key me-2"></i>API Keys</h5>
+                <button class="btn btn-sm btn-outline-primary" onclick="generateApiKey()">
+                    <i class="fas fa-plus me-1"></i>Generate New Key
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    API keys allow you to integrate EduPredict with external applications.
+                    Keep your keys secure and never share them publicly.
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Key</th>
+                                <th>Created</th>
+                                <th>Last Used</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="apiKeysTable">
+                            <tr>
+                                <td>Default Key</td>
+                                <td><code>ep_1234567890abcdef</code></td>
+                                <td>2024-01-15</td>
+                                <td>2024-01-20 14:30</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="revokeKey('default')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Profile Picture -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body text-center">
+                <img src="https://ui-avatars.com/api/?name=Admin+User&background=6366f1&color=fff&bold=true&size=120"
+                     alt="Profile Picture" class="rounded-circle mb-3" style="width: 120px; height: 120px;">
+                <h6 class="mb-2">Admin User</h6>
+                <p class="text-muted small mb-3">Data Analyst</p>
+                <button class="btn btn-outline-primary btn-sm" onclick="changeAvatar()">
+                    <i class="fas fa-camera me-1"></i>Change Photo
+                </button>
+            </div>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h6 class="card-title mb-0"><i class="fas fa-history me-2"></i>Recent Activity</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item px-3 py-3">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0 me-3">
+                                <i class="fas fa-brain text-primary"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <small class="text-muted">2 hours ago</small>
+                                <div>Ran prediction for student profile</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="list-group-item px-3 py-3">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0 me-3">
+                                <i class="fas fa-chart-bar text-success"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <small class="text-muted">1 day ago</small>
+                                <div>Viewed analytics dashboard</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="list-group-item px-3 py-3">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0 me-3">
+                                <i class="fas fa-key text-warning"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <small class="text-muted">3 days ago</small>
+                                <div>Generated new API key</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="list-group-item px-3 py-3">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0 me-3">
+                                <i class="fas fa-user-edit text-info"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <small class="text-muted">1 week ago</small>
+                                <div>Updated profile information</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="/activity" class="btn btn-sm btn-outline-secondary w-100">View All Activity</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Settings -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h6 class="card-title mb-0"><i class="fas fa-shield-alt me-2"></i>Security</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-warning" onclick="changePassword()">
+                        <i class="fas fa-lock me-2"></i>Change Password
+                    </button>
+                    <button class="btn btn-outline-info" onclick="enable2FA()">
+                        <i class="fas fa-mobile-alt me-2"></i>Enable 2FA
+                    </button>
+                    <button class="btn btn-outline-danger" onclick="logoutAll()">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout All Devices
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleDarkMode() {
+    const isDark = document.getElementById('darkMode').checked;
+    document.documentElement.setAttribute('data-bs-theme', isDark ? 'dark' : 'light');
+
+    // Save preference to localStorage
+    localStorage.setItem('darkMode', isDark);
+}
+
+// Load dark mode preference
+document.addEventListener('DOMContentLoaded', function() {
+    const darkMode = localStorage.getItem('darkMode') === 'true';
+    document.getElementById('darkMode').checked = darkMode;
+    document.documentElement.setAttribute('data-bs-theme', darkMode ? 'dark' : 'light');
+});
+
+function resetForm() {
+    document.getElementById('profileForm').reset();
+}
+
+function generateApiKey() {
+    if (confirm('Generate a new API key? The old key will be revoked.')) {
+        // Generate new key logic
+        alert('New API key generated: ep_' + Math.random().toString(36).substr(2, 16));
+        location.reload();
+    }
+}
+
+function revokeKey(keyId) {
+    if (confirm('Revoke this API key? This action cannot be undone.')) {
+        // Revoke key logic
+        alert('API key revoked successfully.');
+        location.reload();
+    }
+}
+
+function changeAvatar() {
+    // Avatar change logic
+    alert('Avatar change functionality coming soon!');
+}
+
+function changePassword() {
+    // Password change logic
+    alert('Password change functionality coming soon!');
+}
+
+function enable2FA() {
+    // 2FA setup logic
+    alert('2FA setup functionality coming soon!');
+}
+
+function logoutAll() {
+    if (confirm('Logout from all devices? You will need to log in again on each device.')) {
+        // Logout all logic
+        alert('Logged out from all devices.');
+    }
+}
+
+// Form submission
+document.getElementById('profileForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // Show loading state
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+    submitBtn.disabled = true;
+
+    // Simulate save operation
+    setTimeout(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+
+        // Show success message
+        const toast = new bootstrap.Toast(document.getElementById('saveToast'));
+        toast.show();
+    }, 2000);
+});
+
+// Add success toast
+document.addEventListener('DOMContentLoaded', function() {
+    document.body.insertAdjacentHTML('beforeend', `
+        <div class="toast-container position-fixed top-0 end-0 p-3">
+            <div id="saveToast" class="toast" role="alert">
+                <div class="toast-header">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    <strong class="me-auto">Profile Updated</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">
+                    Your profile has been updated successfully.
+                </div>
+            </div>
+        </div>
+    `);
+});
+</script>
+{% endblock %}

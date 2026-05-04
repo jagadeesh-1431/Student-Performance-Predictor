@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Audit Logs | EduPredict Analytics{% endblock %}
+
+{% block content %}
+<div class="animate-up">
+    <!-- Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+        <div>
+            <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem;">Historical Audit Trail</h2>
+            <p style="color: var(--text-secondary);">Comprehensive log of all predictive inferences and data modifications.</p>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <button class="btn-enterprise btn-outline" style="font-size: 0.85rem;" onclick="location.reload()">
+                <i class="fas fa-rotate"></i> Refresh
+            </button>
+            <button class="btn-enterprise btn-primary" style="font-size: 0.85rem;" onclick="window.location.href='/predict'">
+                <i class="fas fa-plus"></i> New Entry
+            </button>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card-glass mb-4">
+        <div class="grid-cols-4">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Search Index</label>
+                <input type="text" class="form-input" placeholder="Query by student ID or score...">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Temporal Range (From)</label>
+                <input type="date" class="form-input">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Temporal Range (To)</label>
+                <input type="date" class="form-input">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Batch Size</label>
+                <select class="form-select">
+                    <option>10 Records</option>
+                    <option>25 Records</option>
+                    <option>50 Records</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Table -->
+    <div class="card-glass">
+        <div style="overflow-x: auto;">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Profile</th>
+                        <th>Context</th>
+                        <th>Scores (R/W)</th>
+                        <th>Forecast</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(10) %}
+                    <tr>
+                        <td style="font-family: monospace; color: var(--text-secondary);">2024-05-04 12:44:{{ 59 - i }}</td>
+                        <td>
+                            <span class="badge-custom bg-indigo-soft" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                                {{ ['Female', 'Male'][i % 2] }}
+                            </span>
+                        </td>
+                        <td style="color: var(--text-secondary); font-size: 0.85rem;">
+                            {{ ['Group A', 'Group B', 'Group C'][i % 3] }}, {{ ['High School', 'Bachelor\'s'][i % 2] }}
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 0.5rem; font-weight: 700;">
+                                <span style="color: var(--info);">{{ 70 + i }}</span>
+                                <span style="color: var(--text-muted);">/</span>
+                                <span style="color: var(--success);">{{ 75 + i }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="font-weight: 800; color: var(--primary);">{{ 80 + i }}</span>
+                                <i class="fas fa-arrow-trend-up" style="font-size: 0.7rem; color: var(--success);"></i>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn-enterprise btn-outline" style="padding: 0.4rem; font-size: 0.75rem;"><i class="fas fa-eye"></i></button>
+                                <button class="btn-enterprise btn-outline" style="padding: 0.4rem; font-size: 0.75rem; color: var(--danger);"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div style="margin-top: 2rem; display: flex; justify-content: space-between; align-items: center; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+            <div style="font-size: 0.85rem; color: var(--text-muted);">
+                Showing 1 to 10 of {{ total_records | default(150) }} entries
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn-enterprise btn-outline" style="padding: 0.5rem 1rem; font-size: 0.8rem;" disabled>Previous</button>
+                <button class="btn-enterprise btn-primary" style="padding: 0.5rem 1.25rem; font-size: 0.8rem;">1</button>
+                <button class="btn-enterprise btn-outline" style="padding: 0.5rem 1rem; font-size: 0.8rem;">2</button>
+                <button class="btn-enterprise btn-outline" style="padding: 0.5rem 1rem; font-size: 0.8rem;">3</button>
+                <button class="btn-enterprise btn-outline" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Next</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

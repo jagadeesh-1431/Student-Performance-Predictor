@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Error - EduPredict{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <!-- Error Card -->
+        <div class="card border-0 shadow-sm text-center">
+            <div class="card-body py-5">
+                {% if error_code == 404 %}
+                <!-- 404 Error -->
+                <div class="mb-4">
+                    <i class="fas fa-search fa-5x text-muted mb-4"></i>
+                    <h1 class="display-1 fw-bold text-muted">404</h1>
+                    <h2 class="h4 mb-3">Page Not Found</h2>
+                    <p class="text-muted mb-4">
+                        The page you're looking for doesn't exist or has been moved.
+                    </p>
+                </div>
+                {% elif error_code == 500 %}
+                <!-- 500 Error -->
+                <div class="mb-4">
+                    <i class="fas fa-exclamation-triangle fa-5x text-warning mb-4"></i>
+                    <h1 class="display-1 fw-bold text-muted">500</h1>
+                    <h2 class="h4 mb-3">Server Error</h2>
+                    <p class="text-muted mb-4">
+                        Something went wrong on our end. We're working to fix this issue.
+                    </p>
+                </div>
+                {% else %}
+                <!-- Generic Error -->
+                <div class="mb-4">
+                    <i class="fas fa-exclamation-circle fa-5x text-danger mb-4"></i>
+                    <h1 class="display-1 fw-bold text-muted">{{ error_code or 'Error' }}</h1>
+                    <h2 class="h4 mb-3">{{ error_title or 'Something went wrong' }}</h2>
+                    <p class="text-muted mb-4">
+                        {{ error_description or 'An unexpected error occurred. Please try again.' }}
+                    </p>
+                </div>
+                {% endif %}
+
+                <!-- Error Details (only in debug mode) -->
+                {% if debug and error_details %}
+                <div class="alert alert-warning text-start mb-4">
+                    <h6 class="alert-heading"><i class="fas fa-bug me-1"></i>Debug Information</h6>
+                    <hr>
+                    <pre class="mb-0 small">{{ error_details }}</pre>
+                </div>
+                {% endif %}
+
+                <!-- Action Buttons -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <a href="/" class="btn btn-primary btn-lg me-md-2">
+                        <i class="fas fa-home me-2"></i>Go Home
+                    </a>
+                    <button class="btn btn-outline-secondary btn-lg" onclick="window.history.back()">
+                        <i class="fas fa-arrow-left me-2"></i>Go Back
+                    </button>
+                    {% if error_code == 500 %}
+                    <button class="btn btn-outline-info btn-lg" onclick="reportError()">
+                        <i class="fas fa-envelope me-2"></i>Report Issue
+                    </button>
+                    {% endif %}
+                </div>
+
+                <!-- Help Links -->
+                <div class="mt-4 pt-4 border-top">
+                    <h6 class="text-muted mb-3">Need Help?</h6>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <a href="/about" class="btn btn-sm btn-outline-secondary w-100">
+                                <i class="fas fa-info-circle me-1"></i>About
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="/contact" class="btn btn-sm btn-outline-secondary w-100">
+                                <i class="fas fa-envelope me-1"></i>Contact
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Popular Pages -->
+                <div class="mt-4">
+                    <h6 class="text-muted mb-3">Popular Pages</h6>
+                    <div class="row g-2">
+                        <div class="col-4">
+                            <a href="/predict" class="btn btn-sm btn-outline-primary w-100">
+                                <i class="fas fa-brain me-1"></i>Predict
+                            </a>
+                        </div>
+                        <div class="col-4">
+                            <a href="/history" class="btn btn-sm btn-outline-success w-100">
+                                <i class="fas fa-history me-1"></i>History
+                            </a>
+                        </div>
+                        <div class="col-4">
+                            <a href="/insights" class="btn btn-sm btn-outline-info w-100">
+                                <i class="fas fa-chart-bar me-1"></i>Insights
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Help -->
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-body">
+                <h6 class="card-title"><i class="fas fa-lightbulb me-2"></i>Troubleshooting Tips</h6>
+                <ul class="list-unstyled small text-muted mb-0">
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Check your internet connection</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Try refreshing the page</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Clear your browser cache</li>
+                    <li class="mb-0"><i class="fas fa-check-circle text-success me-2"></i>Contact support if the problem persists</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function reportError() {
+    // Collect error information
+    const errorInfo = {
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        timestamp: new Date().toISOString(),
+        errorCode: {{ error_code or 'null' }},
+        errorMessage: "{{ error_description or '' }}"
+    };
+
+    // Send error report (placeholder)
+    console.log('Error Report:', errorInfo);
+
+    // Show success message
+    const toast = new bootstrap.Toast(document.getElementById('reportToast'));
+    toast.show();
+}
+
+// Add toast notification
+document.addEventListener('DOMContentLoaded', function() {
+    document.body.insertAdjacentHTML('beforeend', `
+        <div class="toast-container position-fixed top-0 end-0 p-3">
+            <div id="reportToast" class="toast" role="alert">
+                <div class="toast-header">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    <strong class="me-auto">Report Sent</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">
+                    Thank you for reporting this issue. We'll look into it.
+                </div>
+            </div>
+        </div>
+    `);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Overview{% endblock %}
+
+{% block content %}
+<div class="animate-up">
+    <!-- Welcome Header -->
+    <div style="margin-bottom: 2.5rem;">
+        <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem;">Academic Intelligence Overview</h2>
+        <p style="color: var(--text-secondary);">Analyzing student performance vectors and predictive model accuracy.</p>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="grid-cols-4 mb-4">
+        <div class="card-glass">
+            <div class="stat-item">
+                <div class="stat-icon indigo"><i class="fas fa-user-group"></i></div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ "{:,}".format(stats.total_students) }}</span>
+                    <span class="stat-label">Total Records</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-glass">
+            <div class="stat-item">
+                <div class="stat-icon emerald"><i class="fas fa-arrow-up-right-dots"></i></div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ stats.avg_math_score }}</span>
+                    <span class="stat-label">Mean Performance</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-glass">
+            <div class="stat-item">
+                <div class="stat-icon amber"><i class="fas fa-medal"></i></div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ stats.top_score }}</span>
+                    <span class="stat-label">Peak Score</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-glass">
+            <div class="stat-item">
+                <div class="stat-icon rose"><i class="fas fa-microchip"></i></div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ stats.r2_score }}</span>
+                    <span class="stat-label">Model R²</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Charts Row -->
+    <div class="grid-1-2" style="margin-bottom: 1.5rem;">
+        <!-- Performance Summary Card -->
+        <div class="card-glass">
+            <h3 class="card-title"><i class="fas fa-shield-halved"></i> Performance Health</h3>
+            <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-top: 2rem;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span style="color: var(--text-secondary);">MAE Error Rate</span>
+                    <span class="badge-custom bg-warning-soft">{{ stats.mae }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span style="color: var(--text-secondary);">RMSE Deviance</span>
+                    <span class="badge-custom bg-danger-soft">{{ stats.rmse }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span style="color: var(--text-secondary);">Training Features</span>
+                    <span class="badge-custom bg-success-soft">{{ stats.features_count }}</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                <a href="/performance" class="btn-enterprise btn-outline w-100" style="font-size: 0.875rem;">
+                    Full Analytics <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Trend Chart -->
+        <div class="card-glass">
+            <h3 class="card-title"><i class="fas fa-chart-line"></i> Score Distribution Analysis</h3>
+            <div class="chart-container">
+                <canvas id="dashboardTrendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Predictions Table -->
+    <div class="card-glass">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h3 class="card-title" style="margin-bottom: 0;"><i class="fas fa-table-list"></i> Recent Prediction Log</h3>
+            <a href="/history" class="btn-enterprise btn-outline" style="padding: 0.5rem 1rem; font-size: 0.8rem;">View Audit Trail</a>
+        </div>
+        
+        <div style="overflow-x: auto;">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>Subject Profile</th>
+                        <th>Educational Context</th>
+                        <th>Socio-Economic</th>
+                        <th>Preparation</th>
+                        <th>Performance Index</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in stats.recent_predictions %}
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 0.8rem;">
+                                    <i class="fas fa-{{ 'venus' if record['gender'] == 'female' else 'mars' }}"></i>
+                                </div>
+                                <span style="text-transform: capitalize;">{{ record['gender'] }}, {{ record['race/ethnicity'] }}</span>
+                            </div>
+                        </td>
+                        <td style="text-transform: capitalize;">{{ record['parental level of education'] }}</td>
+                        <td style="text-transform: capitalize;">{{ record['lunch'] }}</td>
+                        <td>
+                            <span class="badge-custom {{ 'bg-success-soft' if record['test preparation course'] == 'completed' else 'bg-warning-soft' }}">
+                                {{ record['test preparation course'] }}
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <span style="font-weight: 800; font-size: 1.1rem; color: var(--primary);">{{ record['math score'] }}</span>
+                                <div style="flex: 1; height: 4px; width: 60px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden;">
+                                    <div style="height: 100%; background: var(--primary-gradient); width: {{ record['math score'] }}%;"></div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const ctx = document.getElementById('dashboardTrendChart').getContext('2d');
+    
+    // Performance improvement across quintiles (Simulated data)
+    const labels = ['Q1', 'Q2', 'Q3', 'Q4', 'Q5'];
+    const data = [62, 68, 75, 82, 91];
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Mean Performance per Quintile',
+                data: data,
+                borderColor: '#6366f1',
+                backgroundColor: (context) => {
+                    const chart = context.chart;
+                    const {ctx, canvas} = chart;
+                    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                    gradient.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
+                    gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+                    return gradient;
+                },
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#6366f1',
+                pointBorderColor: 'white',
+                pointBorderWidth: 2,
+                pointRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: { 
+                    grid: { display: false },
+                    ticks: { color: '#94a3b8' }
+                },
+                y: { 
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: { color: '#94a3b8' }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

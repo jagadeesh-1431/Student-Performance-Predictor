@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Feature Weights | EduPredict Analytics{% endblock %}
+
+{% block content %}
+<div class="animate-up">
+    <!-- Header -->
+    <div style="margin-bottom: 2.5rem;">
+        <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem;">Predictive Feature Hierarchy</h2>
+        <p style="color: var(--text-secondary);">Identifying the most influential student attributes in the forecasting model.</p>
+    </div>
+
+    <!-- Main Importance Chart -->
+    <div class="card-glass mb-4">
+        <h3 class="card-title"><i class="fas fa-list-ol"></i> Global Feature Importance Index</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem; max-width: 700px; font-size: 0.9rem;">
+            The horizontal index below displays the relative weight of each feature. Higher values indicate a stronger correlation with the final predicted math score.
+        </p>
+        
+        <div style="height: 400px;">
+            <canvas id="importanceChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Secondary Insights Grid -->
+    <div class="grid-cols-2">
+        <div class="card-glass">
+            <h3 class="card-title"><i class="fas fa-lightbulb"></i> Strategic Takeaways</h3>
+            <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1rem;">
+                <div style="display: flex; gap: 1rem;">
+                    <div style="width: 24px; height: 24px; background: rgba(16, 185, 129, 0.1); color: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="fas fa-check" style="font-size: 0.7rem;"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 0.9rem; margin-bottom: 0.25rem;">Score Synchronicity</div>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary);">Reading and writing scores are the primary drivers, suggesting academic performance is multi-disciplinary.</p>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <div style="width: 24px; height: 24px; background: rgba(99, 102, 241, 0.1); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="fas fa-info" style="font-size: 0.7rem;"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 0.9rem; margin-bottom: 0.25rem;">Intervention Efficacy</div>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary);">Test preparation courses demonstrate a non-negligible impact on standard deviation reduction.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-glass">
+            <h3 class="card-title"><i class="fas fa-microchip"></i> Calculation Logic</h3>
+            <p style="font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; margin-top: 1rem;">
+                Weights are derived from the standardized coefficients of the Linear Regression engine after PCA transformation. These values represent the absolute contribution of each feature to the model's decision path.
+            </p>
+            <div style="margin-top: 2rem; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: var(--radius-md); border-left: 3px solid var(--warning);">
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0;">
+                    <strong>Alert:</strong> Model coefficients are updated daily during the automated re-training pipeline.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const ctx = document.getElementById('importanceChart').getContext('2d');
+        const data = {{ importance | tojson }};
+        const labels = Object.keys(data);
+        const values = Object.values(data);
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Relative Weight',
+                    data: values,
+                    backgroundColor: values.map((v, i) => i < 2 ? '#6366f1' : 'rgba(99, 102, 241, 0.15)'),
+                    borderColor: values.map((v, i) => i < 2 ? '#6366f1' : 'rgba(255,255,255,0.1)'),
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    barThickness: 24
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#64748b', font: { size: 10 } },
+                        max: 0.5
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { color: '#f8fafc', font: { weight: '600', size: 11 } }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

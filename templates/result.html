@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction Result - EduPredict{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Main Result Card -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-success text-white text-center">
+                <h4 class="card-title mb-0"><i class="fas fa-check-circle me-2"></i>Prediction Complete</h4>
+            </div>
+            <div class="card-body text-center py-5">
+                <div class="mb-4">
+                    <div class="display-1 fw-bold text-primary mb-3">{{ prediction | default(85.5) | round(1) }}</div>
+                    <h3 class="text-muted mb-0">Predicted Math Score</h3>
+                    <small class="text-muted">Out of 100 points</small>
+                </div>
+
+                <!-- Confidence Gauge -->
+                <div class="mb-4">
+                    <h5 class="mb-3">Prediction Confidence</h5>
+                    <div class="d-flex justify-content-center mb-2">
+                        <div class="progress" style="width: 300px; height: 25px;">
+                            <div class="progress-bar bg-success" role="progressbar"
+                                 style="width: {{ (stats.r2_score * 100) | default(88) | round }}%"
+                                 aria-valuenow="{{ (stats.r2_score * 100) | default(88) | round }}"
+                                 aria-valuemin="0" aria-valuemax="100">
+                                {{ (stats.r2_score * 100) | default(88) | round }}%
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-muted small mb-0">
+                        Based on model accuracy (R² = {{ stats.r2_score | default(0.88) | round(3) }})
+                    </p>
+                </div>
+
+                <!-- Score Interpretation -->
+                <div class="alert alert-info">
+                    <h6 class="alert-heading mb-2"><i class="fas fa-info-circle me-1"></i>Score Interpretation</h6>
+                    {% set score = prediction | default(85.5) %}
+                    {% if score >= 90 %}
+                        <strong>Excellent Performance!</strong> This student shows outstanding mathematical ability.
+                    {% elif score >= 80 %}
+                        <strong>Good Performance!</strong> This student demonstrates solid mathematical skills.
+                    {% elif score >= 70 %}
+                        <strong>Fair Performance.</strong> This student has adequate mathematical foundation.
+                    {% elif score >= 60 %}
+                        <strong>Needs Improvement.</strong> This student may benefit from additional support.
+                    {% else %}
+                        <strong>Significant Support Needed.</strong> This student requires intensive mathematical assistance.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Summary -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0"><i class="fas fa-user me-2"></i>Student Profile Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="border rounded p-3 text-center">
+                            <i class="fas fa-venus-mars fa-2x text-primary mb-2"></i>
+                            <h6 class="mb-1">Gender</h6>
+                            <span class="badge bg-primary">{{ request.form.get('gender', 'Female') | title }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="border rounded p-3 text-center">
+                            <i class="fas fa-users fa-2x text-success mb-2"></i>
+                            <h6 class="mb-1">Race/Ethnicity</h6>
+                            <span class="badge bg-success">{{ request.form.get('race', 'Group C') | title }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="border rounded p-3 text-center">
+                            <i class="fas fa-graduation-cap fa-2x text-warning mb-2"></i>
+                            <h6 class="mb-1">Parental Education</h6>
+                            <small>{{ request.form.get('parent_edu', 'Some College') | title }}</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="border rounded p-3 text-center">
+                            <i class="fas fa-utensils fa-2x text-info mb-2"></i>
+                            <h6 class="mb-1">Lunch Program</h6>
+                            <span class="badge bg-info">{{ request.form.get('lunch', 'Standard') | title }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="border rounded p-3 text-center">
+                            <i class="fas fa-book fa-2x text-secondary mb-2"></i>
+                            <h6 class="mb-1">Test Preparation</h6>
+                            <span class="badge bg-secondary">{{ request.form.get('test_prep', 'None') | title }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="border rounded p-3 text-center">
+                            <i class="fas fa-clock fa-2x text-danger mb-2"></i>
+                            <h6 class="mb-1">Prediction Time</h6>
+                            <small>{{ "now"|strftime("%Y-%m-%d %H:%M") }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scores Breakdown -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0"><i class="fas fa-chart-bar me-2"></i>Academic Scores</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="p-3">
+                            <div class="h2 text-primary mb-1">{{ request.form.get('reading', 70) }}</div>
+                            <small class="text-muted">Reading Score</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3">
+                            <div class="h2 text-success mb-1">{{ request.form.get('writing', 75) }}</div>
+                            <small class="text-muted">Writing Score</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 border-start">
+                            <div class="h2 text-warning mb-1">{{ prediction | default(85.5) | round(1) }}</div>
+                            <small class="text-muted">Predicted Math</small>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="text-center">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        The predicted math score is calculated using machine learning analysis of demographic and academic factors.
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <button class="btn btn-primary w-100" onclick="window.location.href='/predict'">
+                            <i class="fas fa-plus me-2"></i>New Prediction
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-outline-primary w-100" onclick="downloadReport()">
+                            <i class="fas fa-download me-2"></i>Download Report
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-outline-success w-100" onclick="shareResult()">
+                            <i class="fas fa-share me-2"></i>Share Result
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-outline-info w-100" onclick="viewSimilar()">
+                            <i class="fas fa-search me-2"></i>View Similar
+                        </button>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-outline-secondary w-100" onclick="window.location.href='/history'">
+                            <i class="fas fa-history me-2"></i>View All History
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function downloadReport() {
+    // Generate and download a PDF report
+    alert('Report download functionality coming soon!');
+}
+
+function shareResult() {
+    const shareData = {
+        title: 'Student Performance Prediction',
+        text: `Predicted Math Score: ${document.querySelector('.display-1').textContent}`,
+        url: window.location.href
+    };
+
+    if (navigator.share) {
+        navigator.share(shareData);
+    } else {
+        // Fallback - copy to clipboard
+        navigator.clipboard.writeText(`${shareData.text} - ${shareData.url}`).then(() => {
+            // Show success message
+            const toast = new bootstrap.Toast(document.getElementById('shareToast'));
+            toast.show();
+        });
+    }
+}
+
+function viewSimilar() {
+    // Navigate to filtered history view
+    window.location.href = '/history?similar=true';
+}
+
+// Toast notification for share success
+document.body.insertAdjacentHTML('beforeend', `
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="shareToast" class="toast" role="alert">
+            <div class="toast-header">
+                <i class="fas fa-check-circle text-success me-2"></i>
+                <strong class="me-auto">Shared!</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                Prediction result copied to clipboard.
+            </div>
+        </div>
+    </div>
+`);
+</script>
+{% endblock %}

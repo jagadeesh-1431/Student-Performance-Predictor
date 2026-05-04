@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block page_title %}About System{% endblock %}
+{% block page_subtitle %}The technology and vision behind the Student Performance Prediction System.{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 48px; align-items: center;">
+        <div>
+            <h3 class="card-title"><i class="fas fa-microchip"></i> System Architecture</h3>
+            <p style="color: var(--text-muted); line-height: 1.8; margin-bottom: 24px;">
+                EduPredict is a machine learning-based analytics platform designed to help educators identify students who may need additional support. By analyzing historical data and demographic factors, the system provides accurate predictions of academic outcomes.
+            </p>
+            
+            <h4 style="font-weight: 700; margin-bottom: 12px;">The ML Pipeline</h4>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px;">
+                <li style="display: flex; gap: 12px;">
+                    <i class="fas fa-check-circle" style="color: var(--primary-light); margin-top: 4px;"></i>
+                    <span><strong>Pre-processing:</strong> Standard scaling and categorical encoding.</span>
+                </li>
+                <li style="display: flex; gap: 12px;">
+                    <i class="fas fa-check-circle" style="color: var(--primary-light); margin-top: 4px;"></i>
+                    <span><strong>Dimensionality Reduction:</strong> PCA to handle multicollinearity.</span>
+                </li>
+                <li style="display: flex; gap: 12px;">
+                    <i class="fas fa-check-circle" style="color: var(--primary-light); margin-top: 4px;"></i>
+                    <span><strong>Regression:</strong> Linear Regression for interpretable predictions.</span>
+                </li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center;">
+            <div style="background: var(--bg-deep); padding: 40px; border-radius: 30px; border: 1px solid var(--border);">
+                <i class="fas fa-shield-halved" style="font-size: 5rem; color: var(--primary); margin-bottom: 24px; display: block;"></i>
+                <h4 style="font-size: 1.25rem; font-weight: 800;">Privacy First</h4>
+                <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 8px;">All student data is anonymized and handled securely within the predictive engine.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="grid-2">
+    <div class="card">
+        <h3 class="card-title"><i class="fas fa-code"></i> Technology Stack</h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+            <span class="badge" style="background: rgba(99, 102, 241, 0.1); color: #fff; border: 1px solid var(--border);">Python 3.10+</span>
+            <span class="badge" style="background: rgba(99, 102, 241, 0.1); color: #fff; border: 1px solid var(--border);">Flask (Backend)</span>
+            <span class="badge" style="background: rgba(99, 102, 241, 0.1); color: #fff; border: 1px solid var(--border);">Scikit-Learn (ML)</span>
+            <span class="badge" style="background: rgba(99, 102, 241, 0.1); color: #fff; border: 1px solid var(--border);">Chart.js (Visuals)</span>
+            <span class="badge" style="background: rgba(99, 102, 241, 0.1); color: #fff; border: 1px solid var(--border);">Vanilla JS/CSS</span>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3 class="card-title"><i class="fas fa-paper-plane"></i> Contact & Support</h3>
+        <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6;">
+            For academic inquiries or technical support regarding the EduPredict system, please contact the project administrator or visit the official repository.
+        </p>
+    </div>
+</div>
+{% endblock %}

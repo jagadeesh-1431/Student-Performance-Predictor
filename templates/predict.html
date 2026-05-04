@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Predict | EduPredict Analytics{% endblock %}
+
+{% block content %}
+<div class="animate-up">
+    <!-- Header -->
+    <div style="margin-bottom: 2.5rem;">
+        <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem;">Performance Forecasting</h2>
+        <p style="color: var(--text-secondary);">Input student parameters to generate a high-precision score prediction.</p>
+    </div>
+
+    <div class="grid-1-2">
+        <!-- Input Form Side -->
+        <div class="card-glass">
+            <h3 class="card-title"><i class="fas fa-input-numeric"></i> Feature Input Matrix</h3>
+            
+            <form action="/predict" method="POST" id="predictForm" style="margin-top: 2rem;">
+                <div class="grid-cols-2">
+                    <div class="form-group">
+                        <label class="form-label" for="gender">Gender Profile</label>
+                        <select name="gender" id="gender" class="form-select" required>
+                            <option value="female">Female</option>
+                            <option value="male">Male</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="race">Ethnic Grouping</label>
+                        <select name="race" id="race" class="form-select" required>
+                            <option value="group A">Group A</option>
+                            <option value="group B">Group B</option>
+                            <option value="group C" selected>Group C</option>
+                            <option value="group D">Group D</option>
+                            <option value="group E">Group E</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="parent_edu">Parental Educational Background</label>
+                    <select name="parent_edu" id="parent_edu" class="form-select" required>
+                        <option value="some high school">Some High School</option>
+                        <option value="high school">High School</option>
+                        <option value="some college">Some College</option>
+                        <option value="associate's degree">Associate's Degree</option>
+                        <option value="bachelor's degree">Bachelor's Degree</option>
+                        <option value="master's degree">Master's Degree</option>
+                    </select>
+                </div>
+
+                <div class="grid-cols-2">
+                    <div class="form-group">
+                        <label class="form-label" for="lunch">Subsidy Status (Lunch)</label>
+                        <select name="lunch" id="lunch" class="form-select" required>
+                            <option value="standard">Standard</option>
+                            <option value="free/reduced">Free / Reduced</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="test_prep">Preparation Curriculum</label>
+                        <select name="test_prep" id="test_prep" class="form-select" required>
+                            <option value="none">None</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <label class="form-label" style="margin-bottom: 0;">Reading Proficiency Index</label>
+                        <span id="readingVal" style="font-weight: 800; color: var(--primary);">70</span>
+                    </div>
+                    <input type="range" name="reading" id="reading" min="0" max="100" value="70" 
+                           oninput="document.getElementById('readingVal').innerText = this.value">
+                </div>
+
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <label class="form-label" style="margin-bottom: 0;">Writing Proficiency Index</label>
+                        <span id="writingVal" style="font-weight: 800; color: var(--primary);">75</span>
+                    </div>
+                    <input type="range" name="writing" id="writing" min="0" max="100" value="75" 
+                           oninput="document.getElementById('writingVal').innerText = this.value">
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <button type="submit" class="btn-enterprise btn-primary w-100" id="predictBtn">
+                        <i class="fas fa-microchip"></i> Execute Neural Inference
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Result Side -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            {% if prediction is not none %}
+            <div class="card-glass animate-up" style="border-color: var(--primary);">
+                <h3 class="card-title" style="justify-content: center;"><i class="fas fa-bullseye"></i> Forecasted Outcome</h3>
+                
+                <div style="text-align: center; padding: 3rem 0;">
+                    <div style="position: relative; display: inline-block;">
+                        <svg width="200" height="200" viewBox="0 0 100 100">
+                            <!-- Background Track -->
+                            <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="10"></circle>
+                            <!-- Progress Ring -->
+                            <circle cx="50" cy="50" r="42" fill="none" stroke="url(#emeraldGrad)" stroke-width="10" 
+                                    stroke-dasharray="{{ prediction * 2.64 }} 264" stroke-linecap="round" 
+                                    style="transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dasharray 1.5s cubic-bezier(0.4, 0, 0.2, 1);"></circle>
+                            <defs>
+                                <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#10b981" />
+                                    <stop offset="100%" stop-color="#34d399" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                            <div style="font-size: 2.75rem; font-weight: 800; line-height: 1; color: white; letter-spacing: -1px;">{{ "%.2f"|format(prediction) if prediction > 0 else "0" }}</div>
+                            <div style="font-size: 1.1rem; color: rgba(255,255,255,0.6); font-weight: 600; margin-top: 4px;">/100</div>
+                        </div>
+                    </div>
+
+
+                    <div style="margin-top: 2.5rem;">
+                        <span class="badge-custom {% if prediction >= 80 %}bg-success-soft{% elif prediction >= 60 %}bg-warning-soft{% else %}bg-danger-soft{% endif %}" style="font-size: 0.9rem; padding: 0.75rem 1.5rem;">
+                            {% if prediction >= 80 %}Elite Academic Standing{% elif prediction >= 60 %}Competent Performance{% else %}Intervention Recommended{% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1rem; padding: 1.5rem; background: rgba(255,255,255,0.02); border-radius: var(--radius-md);">
+                    <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0;">
+                        <i class="fas fa-info-circle" style="color: var(--primary);"></i>
+                        This prediction is based on the multi-variate linear regression model with PCA feature extraction. Confidence interval: 95%.
+                    </p>
+                </div>
+            </div>
+            {% else %}
+            <div class="card-glass" style="border-style: dashed; opacity: 0.6; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 400px;">
+                <div style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+                    <i class="fas fa-radar"></i>
+                </div>
+                <h3 style="color: var(--text-secondary);">Waiting for Signal</h3>
+                <p style="max-width: 280px; font-size: 0.9rem; color: var(--text-muted);">Configure the student parameters on the left and execute the inference engine.</p>
+            </div>
+            {% endif %}
+
+            {% if error %}
+            <div class="card-glass" style="border-color: var(--danger); background: rgba(239, 68, 68, 0.05);">
+                <div style="display: flex; gap: 1rem; color: var(--danger);">
+                    <i class="fas fa-triangle-exclamation" style="font-size: 1.25rem;"></i>
+                    <div>
+                        <div style="font-weight: 700; margin-bottom: 0.25rem;">Engine Fault</div>
+                        <div style="font-size: 0.875rem;">{{ error }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('predictForm').addEventListener('submit', function() {
+    const btn = document.getElementById('predictBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner-third fa-spin"></i> Processing Tensor...';
+});
+</script>
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Insights | EduPredict Analytics{% endblock %}
+
+{% block content %}
+<div class="animate-up">
+    <!-- Header -->
+    <div style="margin-bottom: 2.5rem;">
+        <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem;">Socio-Economic Analytics</h2>
+        <p style="color: var(--text-secondary);">Exploring correlations and distribution patterns across the student population.</p>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="grid-cols-2" style="margin-bottom: 1.5rem;">
+        <div class="card-glass">
+            <h3 class="card-title"><i class="fas fa-chart-column"></i> Math Score Distribution</h3>
+            <div class="chart-container">
+                <canvas id="distChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="card-glass">
+            <h3 class="card-title"><i class="fas fa-venus-mars"></i> Performance by Gender</h3>
+            <div class="chart-container">
+                <canvas id="genderChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-cols-2">
+        <div class="card-glass">
+            <h3 class="card-title"><i class="fas fa-chalkboard-user"></i> Preparation Curriculum Impact</h3>
+            <div class="chart-container">
+                <canvas id="prepChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card-glass">
+            <h3 class="card-title"><i class="fas fa-chart-scatter"></i> Multidimensional Correlation</h3>
+            <div class="chart-container">
+                <canvas id="scatterChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const commonOptions = {
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { 
+                    display: true,
+                    labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 } } 
+                }
+            },
+            scales: {
+                y: { 
+                    grid: { color: 'rgba(255,255,255,0.05)' }, 
+                    ticks: { color: '#94a3b8', font: { size: 10 } } 
+                },
+                x: { 
+                    grid: { display: false }, 
+                    ticks: { color: '#94a3b8', font: { size: 10 } } 
+                }
+            }
+        };
+
+        // Distribution Chart
+        new Chart(document.getElementById('distChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['0-10', '10-20', '20-30', '30-40', '40-50', '50-60', '60-70', '70-80', '80-90', '90-100'],
+                datasets: [{
+                    label: 'Frequency',
+                    data: {{ chart_data.distribution | tojson }},
+                    backgroundColor: '#6366f1',
+                    borderRadius: 4,
+                    barThickness: 20
+                }]
+            },
+            options: { ...commonOptions, plugins: { ...commonOptions.plugins, legend: { display: false } } }
+        });
+
+        // Gender Doughnut
+        new Chart(document.getElementById('genderChart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Male', 'Female'],
+                datasets: [{
+                    data: [{{ chart_data.gender_avg.male }}, {{ chart_data.gender_avg.female }}],
+                    backgroundColor: ['#6366f1', '#a855f7'],
+                    borderWidth: 0,
+                    hoverOffset: 15,
+                    cutout: '70%'
+                }]
+            },
+            options: { 
+                ...commonOptions, 
+                scales: { x: { display: false }, y: { display: false } },
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Prep Bar
+        new Chart(document.getElementById('prepChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['No Preparation', 'Completed Course'],
+                datasets: [{
+                    data: [{{ chart_data.test_prep_avg.none }}, {{ chart_data.test_prep_avg.completed }}],
+                    backgroundColor: ['rgba(99, 102, 241, 0.2)', '#10b981'],
+                    borderRadius: 6,
+                    barThickness: 60
+                }]
+            },
+            options: { 
+                ...commonOptions, 
+                plugins: { ...commonOptions.plugins, legend: { display: false } },
+                scales: { 
+                    ...commonOptions.scales, 
+                    y: { ...commonOptions.scales.y, max: 100 } 
+                } 
+            }
+        });
+
+        // Scatter Correlation
+        new Chart(document.getElementById('scatterChart').getContext('2d'), {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Student Metrics',
+                    data: {{ chart_data.scatter | tojson }},
+                    backgroundColor: 'rgba(99, 102, 241, 0.4)',
+                    pointRadius: 3,
+                    hoverRadius: 6
+                }]
+            },
+            options: { 
+                ...commonOptions, 
+                scales: { 
+                    x: { 
+                        display: true, 
+                        title: { display: true, text: 'Reading Competency', color: '#64748b', font: { size: 10, weight: '700' } }, 
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { color: '#94a3b8' }
+                    },
+                    y: { 
+                        display: true, 
+                        title: { display: true, text: 'Math Competency', color: '#64748b', font: { size: 10, weight: '700' } },
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { color: '#94a3b8' }
+                    }
+                } 
+            }
+        });
+    });
+</script>
+{% endblock %}

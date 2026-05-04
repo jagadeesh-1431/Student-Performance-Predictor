@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Model Health | EduPredict Analytics{% endblock %}
+
+{% block content %}
+<div class="animate-up">
+    <!-- Header -->
+    <div style="margin-bottom: 2.5rem;">
+        <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem;">Engine Validation & Integrity</h2>
+        <p style="color: var(--text-secondary);">Technical audit of the predictive model's mathematical accuracy and bias.</p>
+    </div>
+
+    <!-- Technical Metrics Grid -->
+    <div class="grid-cols-4 mb-4">
+        <div class="card-glass">
+            <div class="stat-item">
+                <div class="stat-icon indigo"><i class="fas fa-check-double"></i></div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ stats.r2_score }}</span>
+                    <span class="stat-label">R-Squared</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-glass">
+            <div class="stat-item">
+                <div class="stat-icon emerald"><i class="fas fa-bullseye"></i></div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ stats.mae }}</span>
+                    <span class="stat-label">MAE Index</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-glass">
+            <div class="stat-item">
+                <div class="stat-icon amber"><i class="fas fa-microscope"></i></div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ stats.rmse }}</span>
+                    <span class="stat-label">RMSE Deviance</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-glass">
+            <div class="stat-item">
+                <div class="stat-icon rose"><i class="fas fa-dna"></i></div>
+                <div class="stat-info">
+                    <span class="stat-value">PCA-14</span>
+                    <span class="stat-label">Feature Space</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-1-2">
+        <!-- Technical Definition -->
+        <div class="card-glass">
+            <h3 class="card-title"><i class="fas fa-book"></i> Metrics Dictionary</h3>
+            <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.5rem;">
+                <div>
+                    <div style="font-weight: 700; font-size: 0.9rem; margin-bottom: 0.25rem;">R-Squared (R²)</div>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary);">The proportion of variance for a dependent variable that's explained by an independent variable.</p>
+                </div>
+                <div>
+                    <div style="font-weight: 700; font-size: 0.9rem; margin-bottom: 0.25rem;">Mean Absolute Error (MAE)</div>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary);">Average of the absolute differences between the actual and the predicted values.</p>
+                </div>
+                <div style="padding-top: 1rem; border-top: 1px solid var(--border);">
+                    <div style="background: rgba(99, 102, 241, 0.05); padding: 1rem; border-radius: var(--radius-md); border-left: 3px solid var(--primary);">
+                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0;">
+                            <strong>Model Status:</strong> Current engine is utilizing Linear Regression with Principle Component Analysis for dimensionality reduction.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scatter Chart -->
+        <div class="card-glass">
+            <h3 class="card-title"><i class="fas fa-chart-scatter"></i> Actual vs Predicted Variance</h3>
+            <div class="chart-container" style="height: 400px;">
+                <canvas id="perfScatter"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const ctx = document.getElementById('perfScatter').getContext('2d');
+        new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Validation Sample',
+                    data: {{ scatter | tojson }},
+                    backgroundColor: 'rgba(99, 102, 241, 0.4)',
+                    pointRadius: 4,
+                    hoverRadius: 6
+                }, {
+                    label: 'Theoretical Perfection',
+                    data: [{x: 0, y: 0}, {x: 100, y: 100}],
+                    type: 'line',
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    borderDash: [5, 5],
+                    fill: false,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { color: '#94a3b8', font: { size: 11 } }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Actual Ground Truth', color: '#64748b', font: { weight: '700', size: 10 } },
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#94a3b8' },
+                        min: 30, max: 100
+                    },
+                    y: {
+                        title: { display: true, text: 'Model Prediction', color: '#64748b', font: { weight: '700', size: 10 } },
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#94a3b8' },
+                        min: 30, max: 100
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

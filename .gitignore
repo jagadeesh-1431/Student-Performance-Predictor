@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.venv/
+.env
+
+# IDEs
+.vscode/
+.idea/
+
+# Project Specific
+logs/
+node_modules/
+instance/
+*.log
+.github/
+Dockerfile
+docker-compose.yml
+prometheus.yml
+k8s/
+tests/
+src/
+migrations/
+frontend/
+start_everything.py
+run.py
+run.bat
+run_web.bat
+dev.db
+sqlite.db
+
+# Keep essential data
+!data/students.csv
+!models/student_model.joblib
